@@ -1,0 +1,78 @@
+// colors
+$background-color: #232731;
+$surface-color: #333741;
+$surface-color-hover: #434751;
+$primary-color: #8888ee;
+$primary-color-hover: #bbbbff;
+$secondary-color: #bb77cc;
+$on-background: #FFFFFF;
+$on-surface: #cccccc;
+$on-surface-hover-color: #FFFFFF;
+$on-primary: #000000;
+
+// font def
+$font-stack: Helvetica, sans-serif;
+
+body {
+    background-color: $background-color;
+    color: $on-background;
+    font: 100% $font-stack;
+}
+
+%button-base {
+    background-color: $primary-color;
+    color: $on-primary;
+    border: 1px solid rgba($on-background, 0);
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    transition: all 0.5s ease;
+    padding: 4px 12px;
+
+    &:hover:enabled {
+        background-color: $primary-color-hover;
+    }
+
+    &:focus:enabled {
+        outline: none;
+        border: 1px solid $on-background;
+        background-color: $primary-color-hover;
+    }
+
+    &:disabled {
+        background-color: $surface-color;
+        color: $on-surface;
+    }
+
+}
+
+%surface-button-base {
+    @extend %button-base;
+    background-color: $surface-color;
+    color: $on-surface;
+    border: 1px solid $on-surface;
+
+    &:hover:enabled {
+        background-color: $surface-color;
+        color: $primary-color;
+        border-color: $primary-color;
+    }
+
+    &:focus:enabled {
+        background-color: $surface-color-hover;
+        color: $primary-color-hover;
+        border-color: $primary-color-hover;
+    }
+}
+
+button {
+    @extend %button-base;
+}
+
+.square {
+    display: inline-block;
+    font-size: 18px;
+    height: 30px;
+    width: 30px;
+    padding: 0px 0px;
+}

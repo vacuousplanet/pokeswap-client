@@ -1,0 +1,33 @@
+@use '../app';
+
+.romAdder {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.romcard {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+
+    .path p {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 12px;
+        color: app.$on-surface;
+        padding: 4px;
+    }
+
+    .browse {
+        height: initial;
+        padding: 4px;
+    }
+
+}
+
+hr {
+    border: 0;
+    border-top: 2px solid app.$surface-color;
+}

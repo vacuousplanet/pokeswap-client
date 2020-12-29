@@ -1,0 +1,52 @@
+@use '../app';
+
+.start {
+    margin-top: 16px;
+}
+
+label {
+    display: block;
+    font-size: 12px;
+    color: app.$on-surface;
+
+}
+.custom-select {
+
+    width: 100%;
+    min-width: 15ch;
+    max-width: 30ch;
+    border: 1px solid var(--select-border);
+    border-radius: 0.25em;
+    padding: 0.25em 0.5em;
+    font-size: 1.25rem;
+    cursor: pointer;
+    line-height: 1.1;
+    background-color: app.$surface-color;
+    //color: app.$on-surface;
+
+    select {
+        appearance: none;
+        background-color: transparent;
+        color: app.$on-surface;
+        border: none;
+        padding: 0 1em 0 0;
+        margin: 0;
+        width: 100%;
+        font-family: inherit;
+        font-size: 16px;
+        cursor: inherit;
+        line-height: inherit;
+        outline: none;
+
+        option {
+
+            background-color: app.$surface-color;
+            color: app.$on-surface;
+
+            &:focus {
+                background-color: app.$primary-color;
+                color: app.$on-primary;
+            }
+        }
+    }
+}
