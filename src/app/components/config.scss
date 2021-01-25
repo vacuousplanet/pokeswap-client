@@ -4,6 +4,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-right: 20px;
+
 }
 
 .romcard {
@@ -23,6 +25,35 @@
     .browse {
         height: initial;
         padding: 4px;
+    }
+
+    input[type=text] {
+        background-color: app.$background-color;
+        color: app.$on-surface;
+
+        width: 75%;
+        max-width: 400px;
+        padding: 12px 12px;
+
+        border: 1px solid app.$surface-color;
+        border-radius: 4px;
+        box-sizing: border-box;
+
+        font: 100% app.$font-stack;
+
+        &::selection {
+            background-color: app.$primary-color;
+            color: app.$on-background
+        }
+
+        &:hover:enabled {
+            border-color: app.$surface-color-hover;
+            color: app.$on-background;
+        }
+    
+        &:focus:enabled {
+            border-color: app.$primary-color-hover;
+        }
     }
 
 }

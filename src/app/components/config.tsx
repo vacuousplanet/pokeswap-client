@@ -15,6 +15,10 @@ function newBizhawkPath(): string {
     return ipcRenderer.sendSync('bizhawk_path_update');
 }
 
+function updateServerURL(new_server: string = ''): string {
+    return ipcRenderer.sendSync('server_url_update', new_server);
+}
+
 const Config = () => {
 
     // Router forces Config reload, so get states from main process
@@ -26,11 +30,24 @@ const Config = () => {
         ipcRenderer.sendSync('get_bizhawk_path')
     );
 
+    const [serverURL, changeServerURL] = useState(
+        ipcRenderer.sendSync('get_server_url')  
+    );
 
     return (
         <>
         <h2>Configuration</h2>
 
+        <div>
+            <h3>ServerURL</h3>
+            <div className="romcard">
+                <input type="text" name="" id="" value={serverURL} onChange= {(event) => changeServerURL(event.target.value)}/>
+                <div className="browse">
+                    <button onClick={() => { changeServerURL(updateServerURL(serverURL))}}>Change...</button>
+                </div>
+            </div>
+        </div>
+        <hr/>
         <div className="romAdder">
             <h3>ROM Paths</h3>
             <button className="square" onClick={() => {
@@ -53,6 +70,7 @@ const Config = () => {
                 </div>
             )}
         </div>
+        <hr/>
         <div>
             <h3>Bizhawk Path</h3>
             <hr/>

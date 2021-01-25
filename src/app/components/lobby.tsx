@@ -51,6 +51,10 @@ const Lobby = () => {
                 </button>
             </div>
         </form>
+        {/* testing something here */}
+        <div className="start">
+            <button onClick={() => ipcRenderer.sendSync('test_write')}></button>
+        </div>
         </>
     )
 }

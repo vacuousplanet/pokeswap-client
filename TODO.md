@@ -17,15 +17,18 @@
  ---
 
  - ✔️ start bizhawk + rom with flags via desktop app
- - ❌ create tcp socket in desktop app
- - ❌ draft lua scripts for bizhawk
- - ❌ outline bi-directional communication
- - ❌ probe ROMS for team data memory addresses
- - ❌ probe ROMS for game progression/state
- - ❌ store loadable memory addresses somewhere
+ - ✔️ create tcp socket in desktop app
+ - 📝 draft lua scripts for bizhawk
+ - ✔️ outline bi-directional communication
+ - ✔️ probe ROMS for team data memory addresses
+ - ✔️ probe ROMS for game progression/state
+
+---
+
+ - ❌ create new pokeswap-server for API
+ - ❌ connect desktop app client to server
  - ❌ draft emu pause on signal from desktop app
  - ❌ draft game state change detection/signaling
  - ❌ draft team memory transfers
- - ❌ create new pokeswap-server for API
- - ❌ connect desktop app client to server
+ - ❌ store loadable memory addresses somewhere
  - ❌ polish as necessary
