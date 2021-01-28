@@ -5,14 +5,28 @@ import { resolve, relative } from 'path';
 
 import gameType from './electron/gba_checker';
 
-type romPath = {
+interface romPath {
     path: string;
     name: string;
 };
 
+interface LobbySettings {
+    username: string;
+    lobby_size: number;
+    lobby_code: string;
+    lobby_password: string;
+};
+
+//TODO: cache/load these on close/open respectively
 var rom_list: romPath[] = [];
 var bizhawk_path: string = '';
-var server_URL: string = 'http://localhost:3000'
+var server_URL: string = 'http://localhost:3000';
+var lobby_settings: LobbySettings = <LobbySettings>{
+    username: '',
+    lobby_size: 2,
+    lobby_code: '',
+    lobby_password: ''
+};
 
 const local_lua_path: string = './src/lua/biz_client.lua'; 
 
@@ -100,11 +114,11 @@ ipcMain.on('bizhawk_path_update', (event, ...args) => {
             event.returnValue = '';
         }
     }).catch(err => console.log(err));
-})
+});
 
 ipcMain.on('get_bizhawk_path', (event, ...args) => {
     event.returnValue = bizhawk_path;
-})
+});
 
 
 ipcMain.on('start_bizhawk', (event, ...args) => {
@@ -114,26 +128,35 @@ ipcMain.on('start_bizhawk', (event, ...args) => {
         `--socket_port=${port}`,
         `--lua=${resolve(bizhawk_path, relative(bizhawk_path, local_lua_path))}`
     ]);
-})
+});
 
 
 ipcMain.on('get_server_url', (event, ...args) => {
     event.returnValue = server_URL;
-})
+});
 
 ipcMain.on('server_url_update', (event, ...args) => {
     // TODO: test validity of new url
     server_URL = args[0];
     console.log(server_URL);
     event.returnValue = server_URL;
-})
+});
 
+ipcMain.on('get_lobby_settings', (event, ...args) => {
+    event.returnValue = lobby_settings;
+});
 
+ipcMain.on('update_lobby_settings', (event, ...args) => {
+    lobby_settings = Object.defineProperty(args[0], args[1], {value: args[2]});
+    event.returnValue = lobby_settings;
+});
+
+/*
 ipcMain.on('test_write', (event, ...args) => {
     if (lua_socket !== null) {
         lua_socket.write('yo waddup lua');
     }
     event.returnValue = null;
-})
-
+});
+*/
 app.on('ready', createWindow);

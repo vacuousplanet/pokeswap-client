@@ -41,7 +41,7 @@ const Config = () => {
         <div>
             <h3>ServerURL</h3>
             <div className="romcard">
-                <input type="text" name="" id="" value={serverURL} onChange= {(event) => changeServerURL(event.target.value)}/>
+                <input type="text" name="" id="" value={serverURL} onChange={(event) => changeServerURL(event.target.value)}/>
                 <div className="browse">
                     <button onClick={() => { changeServerURL(updateServerURL(serverURL))}}>Change...</button>
                 </div>

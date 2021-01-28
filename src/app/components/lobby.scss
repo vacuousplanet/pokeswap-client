@@ -50,3 +50,56 @@ label {
         }
     }
 }
+
+.horiz-split {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    padding: 12px 12px;
+    justify-content: space-evenly;
+    align-items: flex-start;
+
+}
+
+.vert-line {
+    background-color: transparent;
+    width: 0%;
+    height: 400px;
+    border: 2px solid app.$surface-color;
+}
+
+form {
+    div.form-section {
+        padding: 8px 0;
+    }
+}
+
+input {
+    background-color: app.$surface-color;
+    color: app.$on-surface;
+
+    width: 75%;
+    max-width: 400px;
+    padding: 4px 4px;
+
+    border: 1px solid app.$surface-color;
+    border-radius: 4px;
+    box-sizing: border-box;
+
+    font: 100% app.$font-stack;
+
+    &::selection {
+        background-color: app.$primary-color;
+        color: app.$on-background
+    }
+
+    &:hover:enabled {
+        border-color: app.$surface-color-hover;
+        color: app.$on-background;
+    }
+
+    &:focus:enabled {
+        outline: none;
+        border: 1px solid app.$primary-color-hover;
+    }
+}
