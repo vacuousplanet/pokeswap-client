@@ -103,3 +103,71 @@ input {
         border: 1px solid app.$primary-color-hover;
     }
 }
+
+.lds-holder {
+    position:absolute;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 24px;
+    align-items: center;
+}
+
+h2 {
+    color: app.$on-background;
+}
+
+.lds-ripple {
+  display: inline-block;
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+.lds-ripple div {
+  position: absolute;
+  border: 4px solid app.$on-background;
+  opacity: 1;
+  border-radius: 50%;
+  animation: lds-ripple 1.5s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.lds-ripple div:nth-child(2) {
+  animation-delay: -0.5s;
+}
+
+.lds-hr {
+    border: 0;
+    border-top: 2px solid app.$on-background;
+    position: relative;
+    top: 64px;
+    animation: lds-hr 1.5s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    animation-delay: -0.5s;
+}
+
+@keyframes lds-ripple {
+  0% {
+    top: 70px;
+    left: 70px;
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 0px;
+    left: 0px;
+    width: 140px;
+    height: 140px;
+    opacity: 0;
+  }
+}
+
+@keyframes lds-hr {
+    0% {
+      width: 0;
+      height: 0;
+      opacity: 1;
+    }
+    100% {
+      width: 140px;
+      height: 140px;
+      opacity: 0;
+    }
+  }

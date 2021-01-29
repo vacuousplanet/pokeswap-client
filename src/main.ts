@@ -12,10 +12,11 @@ interface romPath {
 
 interface LobbySettings {
     username: string;
+    gamepath: string;
     lobby_size: number;
     lobby_code: string;
     lobby_password: string;
-};
+}
 
 //TODO: cache/load these on close/open respectively
 var rom_list: romPath[] = [];
@@ -23,6 +24,7 @@ var bizhawk_path: string = '';
 var server_URL: string = 'http://localhost:3000';
 var lobby_settings: LobbySettings = <LobbySettings>{
     username: '',
+    gamepath: '',
     lobby_size: 2,
     lobby_code: '',
     lobby_password: ''
@@ -133,6 +135,11 @@ ipcMain.on('start_bizhawk', (event, ...args) => {
 
 ipcMain.on('get_server_url', (event, ...args) => {
     event.returnValue = server_URL;
+});
+
+ipcMain.on('check_server_url', (event, ...args) => {
+    // TODO: actually check validity of server
+    event.returnValue = true;
 });
 
 ipcMain.on('server_url_update', (event, ...args) => {

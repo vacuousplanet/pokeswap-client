@@ -9,12 +9,17 @@ import {
     Switch,
     Route,
     Link,
-    Redirect
+    Redirect,
+    useRouteMatch
 } from "react-router-dom";
 
 import { ipcRenderer } from 'electron';
 
 import './lobby.scss';
+
+import LobbySetup from './setup';
+
+/*
 
 interface romPath {
     path: string;
@@ -32,6 +37,14 @@ function changeSettings(settings: LobbySettings, prop: string, value: string | n
     return ipcRenderer.sendSync('update_lobby_settings', settings, prop, value);
 }
 
+interface LobbySettings {
+    username: string;
+    lobby_size: number;
+    lobby_code: string;
+    lobby_password: string;
+}
+*/
+
 /*
 OK, so it's time to change this guy up a bit
 First things first, let's think about lobby control flow (UI-wise), assuming proper config
@@ -43,7 +56,8 @@ First things first, let's think about lobby control flow (UI-wise), assuming pro
 
 What this means UI wise:
     -> Two tabs for Create/Join sections
-    -> On create/join lobby, go to 'hidden' lobby tab
+    -> On create/join lobby, show wheel while server creates lobby
+    -> Once ready, show 'connected' lobby screen/tab/route
 
 Alternatively:
     -> Instead of tabs, just split it right down the middle
@@ -53,20 +67,23 @@ For now, mimic the alpha site's options
     -> Share usernames
     -> Left create needs game version and lobby size
     -> Right join needs lobby code and pw (lol)
+
+---
+---
+
+Ok, now that the setup (create/join) page is templated, let's think about how to go about this
+    -> On create/join lobby, we'll need to send information to the socketIO server
+    -> While this happens, should display a different page
+    -> So, on create/join buttons clicked (and valid), can use 'history.push()' to redirect to connecting page
+    -> Once a responce is recieved from the socket server, the connecting page should redirect either back to 
+       the original page, or a new lobby page!
 */
 
-// interface for lobby settings
-// TODO: add gamepath/romPath into this
-//       no need for it to be separate tbh
-interface LobbySettings {
-    username: string;
-    lobby_size: number;
-    lobby_code: string;
-    lobby_password: string;
-}
 
 const Lobby = () => {
 
+    let { path, url } = useRouteMatch();
+    /*
     const romlist: romPath[] = ipcRenderer.sendSync('get_roms_list');
 
     const bizhawk_path: string = ipcRenderer.sendSync('get_bizhawk_path');
@@ -85,93 +102,26 @@ const Lobby = () => {
                 <option key={rominfo.path} value={rominfo.path}>{rominfo.name}</option>)
             : <option value=''>No Roms found...</option>;
 
+    */
+
+    // TODO (tmrw): create 'LobbyConnecting' component and connect basic socket comms
+
     return (
         <>
-        <div className="horiz-split">
-            <div>
-                <h2>Create Lobby</h2>
-                <form onSubmit={(event) => startGame(event, gamepath)}>
-                    <div className="form-section">
-                        <label>Username</label>
-                        <div>
-                            <input type="text" name="" id="" value={lobby_settings.username} 
-                                onChange={event =>
-                                    updateLobbySettings(changeSettings(lobby_settings, 'username', event.target.value))
-                                }
-                            />
-                        </div>
-                    </div>
-                    <div className="form-section">
-                        <label>Game selection</label>
-                        <div className="custom-select">
-                            <select value={gamepath} onChange={event => updateGamepath(event.target.value)}>
-                                {options}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="form-section">
-                        <label>Lobby Size</label>
-                        <div>
-                            <input type="number" name="" id="" min="2" max="10" value={lobby_settings.lobby_size}
-                                onChange={event => 
-                                    updateLobbySettings(changeSettings(lobby_settings, 'lobby_size', Number(event.target.value)))
-                                }
-                            />
-                        </div>
-                    </div>
-                    <div className="start">
-                        <button 
-                            type="submit"
-                            disabled={(romlist.length === 0) || (bizhawk_path === '')}
-                        >Create
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <div className="vert-line"/>
-            <div>
-                <h2>Join Lobby</h2>
-                <form onSubmit={(event) => startGame(event, gamepath)}>
-                    <div className="form-section">
-                        <label>Username</label>
-                        <div>
-                            <input type="text" name="" id="" value={lobby_settings.username} 
-                                onChange={event => 
-                                    updateLobbySettings(changeSettings(lobby_settings, 'username', event.target.value))
-                                }
-                            />
-                        </div>
-                    </div>
-                    <div className="form-section">
-                        <label>Lobby Code</label>
-                        <div>
-                            <input type="text" name="" id="" value={lobby_settings.lobby_code} 
-                                onChange={event => 
-                                    updateLobbySettings(changeSettings(lobby_settings, 'lobby_code', event.target.value))
-                                }
-                            />
-                        </div>
-                    </div>
-                    <div className="form-section">
-                        <label>Lobby Password</label>
-                        <div>
-                            <input type="text" name="" id="" value={lobby_settings.lobby_password} 
-                                onChange={event => 
-                                    updateLobbySettings(changeSettings(lobby_settings, 'lobby_password', event.target.value))
-                                }
-                            />
-                        </div>
-                    </div>
-                    <div className="start">
-                        <button 
-                            type="submit"
-                            disabled={(romlist.length === 0) || (bizhawk_path === '')}
-                        >Join
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <Switch>
+            <Route exact path={path}>
+                <LobbySetup/>
+            </Route>
+            <Route path={`${path}/connect/:mode`}>
+                <div className="lds-holder">
+                    <div className="lds-ripple"><div></div><div></div><hr className="lds-hr"/></div>
+                    <h2>connecting to pokeswap servers...</h2>
+                </div>
+            </Route>
+            <Route path={`${path}/connected`}>
+                <h3>oh u in the big boy lobby now</h3>
+            </Route>
+        </Switch>
         </>
     )
 }
