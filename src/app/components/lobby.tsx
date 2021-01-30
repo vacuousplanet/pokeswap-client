@@ -123,7 +123,7 @@ const Lobby = () => {
             </Route>
         </Switch>
         </>
-    )
+    );
 }
 
 export default Lobby;

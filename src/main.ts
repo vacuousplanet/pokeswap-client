@@ -3,6 +3,8 @@ import { spawn, ChildProcess } from 'child_process'
 import { createServer, Socket } from 'net';
 import { resolve, relative } from 'path';
 
+import io from 'socket.io-client';
+
 import gameType from './electron/gba_checker';
 
 interface romPath {
@@ -29,6 +31,8 @@ var lobby_settings: LobbySettings = <LobbySettings>{
     lobby_code: '',
     lobby_password: ''
 };
+
+var server_socket: SocketIOClient.Socket;
 
 const local_lua_path: string = './src/lua/biz_client.lua'; 
 
@@ -156,6 +160,37 @@ ipcMain.on('get_lobby_settings', (event, ...args) => {
 ipcMain.on('update_lobby_settings', (event, ...args) => {
     lobby_settings = Object.defineProperty(args[0], args[1], {value: args[2]});
     event.returnValue = lobby_settings;
+});
+
+ipcMain.on('pokeswap-server-init', (event, ...args) => {
+    const mode: string = args[0];
+    
+    server_socket = io(server_URL);
+
+    const server_settings: LobbySettings = Object.create(lobby_settings);
+    server_settings.gamepath = gameType(lobby_settings.gamepath) || '';
+
+    // TODO: formalize server_socket communication
+    //       this also, includes adding status callbacks!
+    server_socket.emit(mode, server_settings, (responce: any) => {
+        ipcMain.emit('pokeswap-server-init-responce', responce);
+    });
+
+    /*
+    switch (mode) {
+        case 'create':
+            // TODO: fix rom_list[0] for testing
+            server_socket.emit('create', server_settings, (responce: any) => {
+                ipcMain.emit('pokeswap-server-init-responce', responce);
+            });
+            break;
+        case 'join':
+            server_socket.emit('join', lobby_settings.username, lobby_settings.lobby_code, lobby_settings.lobby_password);
+            break;
+        default:
+            break;
+    }
+    */
 });
 
 /*

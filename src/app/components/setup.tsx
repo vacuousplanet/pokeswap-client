@@ -41,7 +41,6 @@ const LobbySetup = () => {
     // TODO: this should probably just check for valid bizhawk path
     const bizhawk_path: string = ipcRenderer.sendSync('get_bizhawk_path');
 
-    // TODO: just get bool 'server_URL_valid'
     const server_URL_valid: boolean = ipcRenderer.sendSync('check_server_url');
 
     // i imagine it's better to just make a single lobby_settings object to update/retrieve!
