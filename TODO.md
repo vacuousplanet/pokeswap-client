@@ -25,10 +25,10 @@
 
 ---
 
- - ❌ create new pokeswap-server for API
- - ❌ connect desktop app client to server
+ - ✔️ create new pokeswap-server for API
+ - 📝 connect desktop app client to server
  - ❌ draft emu pause on signal from desktop app
- - ❌ draft game state change detection/signaling
- - ❌ draft team memory transfers
+ - ✔️ draft game state change detection/signaling
+ - ✔️ draft team memory transfers
  - ❌ store loadable memory addresses somewhere
  - ❌ polish as necessary

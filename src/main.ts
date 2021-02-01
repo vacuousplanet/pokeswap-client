@@ -23,7 +23,7 @@ interface LobbySettings {
 //TODO: cache/load these on close/open respectively
 var rom_list: romPath[] = [];
 var bizhawk_path: string = '';
-var server_URL: string = 'http://localhost:3000';
+var server_URL: string = 'http://127.0.0.1:3000';
 var lobby_settings: LobbySettings = <LobbySettings>{
     username: '',
     gamepath: '',
@@ -31,6 +31,7 @@ var lobby_settings: LobbySettings = <LobbySettings>{
     lobby_code: '',
     lobby_password: ''
 };
+var lobby_init_mode: string = "";
 
 var server_socket: SocketIOClient.Socket;
 
@@ -64,6 +65,7 @@ const createWindow = (): void => {
         height: 600,
         webPreferences: {
             nodeIntegration: true,
+            webSecurity: false,
         },
     });
 
@@ -157,40 +159,31 @@ ipcMain.on('get_lobby_settings', (event, ...args) => {
     event.returnValue = lobby_settings;
 });
 
-ipcMain.on('update_lobby_settings', (event, ...args) => {
-    lobby_settings = Object.defineProperty(args[0], args[1], {value: args[2]});
-    event.returnValue = lobby_settings;
-});
-
-ipcMain.on('pokeswap-server-init', (event, ...args) => {
-    const mode: string = args[0];
-    
-    server_socket = io(server_URL);
-
-    const server_settings: LobbySettings = Object.create(lobby_settings);
+ipcMain.on('get-server-settings', (event, ...args) => {
+    const server_settings: LobbySettings = Object.assign({}, lobby_settings);
     server_settings.gamepath = gameType(lobby_settings.gamepath) || '';
 
-    // TODO: formalize server_socket communication
-    //       this also, includes adding status callbacks!
-    server_socket.emit(mode, server_settings, (responce: any) => {
-        ipcMain.emit('pokeswap-server-init-responce', responce);
-    });
+    event.returnValue = server_settings;
+    console.log(lobby_settings);
+})
 
-    /*
-    switch (mode) {
-        case 'create':
-            // TODO: fix rom_list[0] for testing
-            server_socket.emit('create', server_settings, (responce: any) => {
-                ipcMain.emit('pokeswap-server-init-responce', responce);
-            });
-            break;
-        case 'join':
-            server_socket.emit('join', lobby_settings.username, lobby_settings.lobby_code, lobby_settings.lobby_password);
-            break;
-        default:
-            break;
-    }
-    */
+ipcMain.on('update_lobby_settings', (event, ...args) => {
+    lobby_settings = Object.defineProperty(lobby_settings, args[0], {value: args[1]});
+    event.returnValue = lobby_settings;
+    console.log(lobby_settings);
+});
+
+ipcMain.on('lobby-init', (event, ...args) => {
+    lobby_init_mode = args[0];
+});
+
+ipcMain.on('get-lobby-init-mode', (event, ...args) => {
+    event.returnValue = lobby_init_mode;
+});
+
+ipcMain.on('render-ready', (event, ...args) => {
+    lobby_init_mode = 'ready';
+    event.reply('player-ready');
 });
 
 /*

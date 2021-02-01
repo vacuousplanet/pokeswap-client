@@ -13,11 +13,14 @@ import {
     useRouteMatch
 } from "react-router-dom";
 
+import io from 'socket.io-client';
+
 import { ipcRenderer } from 'electron';
 
 import './lobby.scss';
 
 import LobbySetup from './setup';
+import LobbyConnecting from './connecting';
 
 /*
 
@@ -77,6 +80,9 @@ Ok, now that the setup (create/join) page is templated, let's think about how to
     -> So, on create/join buttons clicked (and valid), can use 'history.push()' to redirect to connecting page
     -> Once a responce is recieved from the socket server, the connecting page should redirect either back to 
        the original page, or a new lobby page!
+
+Thinking now that it's better for socket-io client to be in the renderer side of things.
+I'll declare an instance in here and then pass it down to lobby connecting and lobby connected when needed
 */
 
 
@@ -104,7 +110,7 @@ const Lobby = () => {
 
     */
 
-    // TODO (tmrw): create 'LobbyConnecting' component and connect basic socket comms
+    // TODO: Add 'route auth' (w/ invalid redirects) to fronts of LobbyXXXX components
 
     return (
         <>
@@ -112,14 +118,8 @@ const Lobby = () => {
             <Route exact path={path}>
                 <LobbySetup/>
             </Route>
-            <Route path={`${path}/connect/:mode`}>
-                <div className="lds-holder">
-                    <div className="lds-ripple"><div></div><div></div><hr className="lds-hr"/></div>
-                    <h2>connecting to pokeswap servers...</h2>
-                </div>
-            </Route>
-            <Route path={`${path}/connected`}>
-                <h3>oh u in the big boy lobby now</h3>
+            <Route path={`${path}/connect/`}>
+                <LobbyConnecting />
             </Route>
         </Switch>
         </>

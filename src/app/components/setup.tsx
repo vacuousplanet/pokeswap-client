@@ -17,8 +17,9 @@ function startGame(event: React.FormEvent<HTMLFormElement>, path: string) {
     event.preventDefault();
 }
 
-function changeSettings(settings: LobbySettings, prop: string, value: string | number | romPath): LobbySettings {
-    return ipcRenderer.sendSync('update_lobby_settings', settings, prop, value);
+function changeSettings(settings: LobbySettings, prop: string, value: string | number): LobbySettings {
+    console.log(`${prop}: ${value}`);
+    return ipcRenderer.sendSync('update_lobby_settings', prop, value);
 }
 
 // interface for lobby settings
@@ -52,6 +53,10 @@ const LobbySetup = () => {
                 <option key={rominfo.path} value={rominfo.path}>{rominfo.name}</option>)
             : <option value=''>No Roms found...</option>;
 
+    if (romlist.length > 0 && lobby_settings.gamepath === ''){
+        updateLobbySettings(changeSettings(lobby_settings, 'gamepath', romlist[0].path));
+    }
+    
     return (
         <>
         <div className="horiz-split">
@@ -59,7 +64,8 @@ const LobbySetup = () => {
                 <h2>Create Lobby</h2>
                 <form onSubmit={(event) => {
                     event.preventDefault();
-                    history.push("/lobby/connect/create");
+                    ipcRenderer.send('lobby-init', 'create');
+                    history.push("/lobby/connect");
                 }}>
                     <div className="form-section">
                         <label>Username</label>
@@ -114,7 +120,8 @@ const LobbySetup = () => {
                 <h2>Join Lobby</h2>
                 <form onSubmit={(event) => {
                     event.preventDefault();
-                    history.push("/lobby/connect/join");
+                    ipcRenderer.send('lobby-init', 'join');
+                    history.push("/lobby/connect");
                 }}>
                     <div className="form-section">
                         <label>Username</label>
