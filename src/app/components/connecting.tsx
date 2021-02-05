@@ -6,14 +6,6 @@ import {useHistory} from 'react-router-dom';
 
 import { ipcRenderer } from 'electron';
 
-interface ConnectingParams {
-    mode: string;
-};
-
-interface ConnectingProps {
-    socket_server: SocketIOClient.Socket;
-}
-
 interface LobbySettings {
     username: string;
     gamepath: string;
@@ -28,7 +20,7 @@ const LobbyConnecting = () => {
 
     const [server_settings, updateServerSettings] = useState(ipcRenderer.sendSync('get-server-settings'));
 
-    const [status_message, updateMessage] = useState('');
+    const [status_messages, updateMessages] = useState<string[]>([]);
 
     useEffect( () => {
         const socket_server: SocketIOClient.Socket = io.connect(ipcRenderer.sendSync('get_server_url'), {reconnection: true});
@@ -53,15 +45,21 @@ const LobbyConnecting = () => {
 
                     // add relevant listeners to the socket
                     socket_server.on('player-joined', (msg: string) => {
-                        updateMessage(msg);
+                        if (status_messages.push(msg) > 10)
+                            status_messages.shift();
+                        updateMessages(status_messages);
                     });
                 
                     socket_server.on('player-ready', (msg: string) => {
-                        updateMessage(msg);
+                        if (status_messages.push(msg) > 10)
+                            status_messages.shift();
+                        updateMessages(status_messages);
                     });
                 
                     socket_server.on('beat-gym', (msg: string) => {
-                        updateMessage(msg);
+                        if (status_messages.push(msg) > 10)
+                            status_messages.shift();
+                        updateMessages(status_messages);
                     });
 
                     // add game listeners
@@ -97,9 +95,13 @@ const LobbyConnecting = () => {
             }>
                 Ready
             </button>
-            <h4 hidden={!ready}>
-                {status_message}
-            </h4>
+            <div hidden={!ready}>
+                {status_messages.map((msg: string) =>
+                    <h4>
+                        {msg}
+                    </h4>
+                )}
+            </div>
         </div>
         </>
     )

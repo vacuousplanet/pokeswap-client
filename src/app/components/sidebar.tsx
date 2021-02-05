@@ -18,6 +18,8 @@ type SidebarProps = {
 }
 */
 
+//TODO: Lock out config + sidebar menu when connected
+
 const Sidebar = () => {
     const [collapsed, toggleCollapse] = useState(true);
 
