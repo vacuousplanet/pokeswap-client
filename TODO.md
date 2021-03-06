@@ -18,7 +18,7 @@
 
  - ✔️ start bizhawk + rom with flags via desktop app
  - ✔️ create tcp socket in desktop app
- - 📝 draft lua scripts for bizhawk
+ - ✔️ draft lua scripts for bizhawk
  - ✔️ outline bi-directional communication
  - ✔️ probe ROMS for team data memory addresses
  - ✔️ probe ROMS for game progression/state
@@ -26,9 +26,25 @@
 ---
 
  - ✔️ create new pokeswap-server for API
- - 📝 connect desktop app client to server
- - ❌ draft emu pause on signal from desktop app
+ - ✔️ connect desktop app client to server
+ - ✔️ draft emu pause on signal from desktop app
  - ✔️ draft game state change detection/signaling
  - ✔️ draft team memory transfers
+
+---
+
+ - 📝 add restartability/rejoin-ability
+ - ❌ store/cache paths and relevant data
+ - ❌ figure out elite four stuff
+ - ❌ do frame counts and/or read game time/gen-stats at end of session
+ - ❌ create comprehensive readme for setup, etc
+ - ❌ polish project structure, css, etc.
+
+Once these steps are completed, I think I can release a beta version
+
+---
+
  - ❌ store loadable memory addresses somewhere
- - ❌ polish as necessary
+ - ❌ allow other roms (fire red, saphire, ruby, etc)
+ - ❌ move from 'swap-on-server' to 'swap-between' architecture
+ - ❌ add 'poke-shuffle' option

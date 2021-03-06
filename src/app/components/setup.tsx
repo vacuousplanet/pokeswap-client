@@ -31,7 +31,8 @@ interface LobbySettings {
     lobby_size: number;
     lobby_code: string;
     lobby_password: string;
-}
+    gym_status: number;
+};
 
 const LobbySetup = () => {
 
@@ -56,7 +57,7 @@ const LobbySetup = () => {
     if (romlist.length > 0 && lobby_settings.gamepath === ''){
         updateLobbySettings(changeSettings(lobby_settings, 'gamepath', romlist[0].path));
     }
-    
+
     return (
         <>
         <div className="horiz-split">
@@ -70,7 +71,7 @@ const LobbySetup = () => {
                     <div className="form-section">
                         <label>Username</label>
                         <div>
-                            <input type="text" name="" id="" value={lobby_settings.username} 
+                            <input type="text" name="" id="" value={lobby_settings.username}
                                 onChange={event =>
                                     updateLobbySettings(changeSettings(lobby_settings, 'username', event.target.value))
                                 }
