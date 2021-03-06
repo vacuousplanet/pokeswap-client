@@ -1,5 +1,5 @@
 import React from 'react';
-import Sidebar from '@/app/components/sidebar';
+import Sidebar from './components/sidebar';
 import './app.scss';
 
 const App = () => {

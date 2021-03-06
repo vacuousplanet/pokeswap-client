@@ -6,9 +6,9 @@ import fs from 'fs'
 
 import {isHttpUri} from 'valid-url';
 
-import gameType from './electron/gba_checker';
+import gameType from './gba_checker';
 
-import {BizData, CODE_MAP, parseBizData, encodeTeamData} from './electron/parse_bizdata';
+import {BizData, CODE_MAP, parseBizData, encodeTeamData} from './parse_bizdata';
 
 interface romPath {
     path: string;

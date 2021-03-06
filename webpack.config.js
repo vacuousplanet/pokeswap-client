@@ -6,12 +6,12 @@ const electronConfiguration = {
     // Build Mode
     mode: 'development',
     // Electron Entrypoint
-    entry: './src/main.ts',
+    entry: './src/main/index.ts',
     target: 'electron-main',
     // helpful navigation shortcuts
     resolve: {
         alias: {
-            ['@']: path.resolve(__dirname, 'src')
+            ['@']: path.resolve(__dirname, 'src', 'main')
         },
         extensions: ['.tsx', '.ts', '.js'],
     },
@@ -31,12 +31,12 @@ const electronConfiguration = {
 // React webpack config
 const reactConfiguration = {
     mode: 'development',
-    entry: './src/renderer.tsx',
+    entry: './src/renderer/renderer.tsx',
     target: 'electron-renderer',
     devtool: 'source-map',
     resolve: {
         alias: {
-            ['@']: path.resolve(__dirname, 'src')
+            ['@']: path.resolve(__dirname, 'src', 'renderer')
         },
         extensions: ['.tsx', '.ts', '.js'],
     },
@@ -63,7 +63,7 @@ const reactConfiguration = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/index.html'
+            template: path.resolve(__dirname, 'src', 'renderer', 'index.html')
         })
     ]
   }
