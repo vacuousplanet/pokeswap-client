@@ -1,19 +1,12 @@
-import React, {useState, useEffect} from 'react'
-
+import React, {useState, useEffect, useContext} from 'react'
 import io from 'socket.io-client';
-
 import {useHistory} from 'react-router-dom';
-
 import { ipcRenderer } from 'electron';
 
-interface LobbySettings {
-    username: string;
-    gamepath: string;
-    lobby_size: number;
-    lobby_code: string;
-    lobby_password: string;
-    gym_status: number;
-}
+import { LobbySettingsContext, LocalPathSettingsContext } from '../contexts';
+import { LobbySettings } from '../../common/LobbySettings';
+
+import gameType from '../../common/gba_checker'
 
 const WithTimeout = (onSuccess: (a: LobbySettings, status: string) => void, onTimeout: () => void, timeout: number) => {
     let called = false;
@@ -32,11 +25,17 @@ const WithTimeout = (onSuccess: (a: LobbySettings, status: string) => void, onTi
     }
 }
 
+// TODO: only send necessary lobby info on game-start signal
+//       also, need to send over game version, not gamepath, to server
+//       not sure if that will necessitate a different object, or expanding
+//       the lobby settings object's fields
 const LobbyConnecting = () => {
 
     let history = useHistory();
 
-    const [server_settings, updateServerSettings] = useState<LobbySettings>(ipcRenderer.sendSync('get-server-settings'));
+    const [lobby_settings, updateLobbySettings] = useContext(LobbySettingsContext);
+
+    const [local_path_settings, updateLocalPathSettings] = useContext(LocalPathSettingsContext);
 
     const [status_messages, updateMessages] = useState<string[]>([]);
 
@@ -47,30 +46,26 @@ const LobbyConnecting = () => {
     const [logged_on, updateLogStatus] = useState<boolean>(ipcRenderer.sendSync('get-lobby-init-mode') === 'success');
 
     useEffect( () => {
-        const server_URL = ipcRenderer.sendSync('get_server_url');
-        const socket_server: SocketIOClient.Socket = io.connect(server_URL, {reconnection: true});
+        const socket_server: SocketIOClient.Socket = io.connect(local_path_settings.server_url, {reconnection: true});
         const lobby_init_mode: string = ipcRenderer.sendSync('get-lobby-init-mode');
 
         if (lobby_init_mode === "create" || lobby_init_mode === "join" || lobby_init_mode === "resume") {
+            const server_settings: LobbySettings = Object.assign({}, lobby_settings);
+            server_settings.gamepath = gameType(lobby_settings.gamepath) || '';
             socket_server.emit(lobby_init_mode, server_settings, WithTimeout((a: LobbySettings, status: string) => {
                 
                 if (status === 'ok') {
 
                     ipcRenderer.send('lobby-init', 'success');
-                    updateLogStatus(true);
-                    // update the lobby
-                    Object.entries(a).forEach(pair => {
-                        if(pair[0] !== 'gamepath') {
-                            console.log(pair)
-                            ipcRenderer.send('update_lobby_settings', pair[0], pair[1]);
-                        }
-                    });
+                    updateLogStatus(true)
 
-
-                    // update the server settings
-                    updateServerSettings(a);
+                    // update the lobby settings
+                    a.gamepath = lobby_settings.gamepath
+                    updateLobbySettings({type: 'set', action: a});
 
                     // start loop for sending game data, etc (eye roll)
+                    // I think I could just do a generic emit,
+                    // passing 'upload-team' and 'beat-gym' as arg[0]
                     ipcRenderer.send('game-coms-loop-out');
                     ipcRenderer.on('game-coms-loop-in', (event, ...args) => {
                         console.log(`game signal: ${args[0]}`)
@@ -98,7 +93,7 @@ const LobbyConnecting = () => {
                         ipcRenderer.send('update_player_list', player_list);
                         updateMessagesCallback(msg);
                         // start bizhawk
-                        ipcRenderer.send('start_bizhawk');
+                        ipcRenderer.send('start_bizhawk', local_path_settings.bizhawk_path, lobby_settings.gamepath);
                     });
                     
                     socket_server.on('beat-gym', (gym_state: number, msg: string) => {
@@ -125,24 +120,6 @@ const LobbyConnecting = () => {
                         ipcRenderer.send('last-player');
                         updateMessagesCallback(msg)
                     });
-
-                    /*
-                    // add game listeners
-                    ipcRenderer.on('game-signal', (event, ...args) => {
-                        // TODO: find a way to unify all of the codes!
-                        console.log(`game signal: ${args[0]}`)
-                        switch (args[0]) {
-                            case 'team':
-                                socket_server.emit('upload-team', args[1], updateMessagesCallback);
-                                break;
-                            case 'gym':
-                                socket_server.emit('beat-gym', args[1], updateMessagesCallback);
-                                break;
-                            default:
-                                break;
-                        }
-                    });
-                    */
 
                     ipcRenderer.on('player-ready', (event, ...args) => {
                         console.log('yo waddup');
@@ -171,7 +148,7 @@ const LobbyConnecting = () => {
                     history.push('/lobby');
                 }
             }, () => {
-                ipcRenderer.send('user-error', 'Server Error', `Request to ${server_URL} timed out...`);
+                ipcRenderer.send('user-error', 'Server Error', `Request to ${local_path_settings.server_url} timed out...`);
                 ipcRenderer.send('lobby-init', "");
                 history.push('/lobby');
             }, 5000));
@@ -188,7 +165,7 @@ const LobbyConnecting = () => {
 
     return (
         <>
-        <h2>{logged_on ? server_settings.lobby_code : ""}</h2>
+        <h2>{logged_on ? lobby_settings.lobby_code : ""}</h2>
         <div>
             <button hidden={ready || !logged_on} onClick={
                 (event) => {
@@ -213,18 +190,5 @@ const LobbyConnecting = () => {
     )
     
 }
-/*
-if (mode === 'create' || mode === 'join') {
 
-    return (
-        <>
-        <div className="lds-holder">
-                <div className="lds-ripple"><div></div><div></div><hr className="lds-hr"/></div>
-                <h2>connecting to pokeswap servers...</h2>
-        </div>
-        </>
-    );
-});
-}
-*/
 export default LobbyConnecting;

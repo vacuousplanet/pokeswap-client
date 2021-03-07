@@ -1,38 +1,25 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import { ipcRenderer } from 'electron';
 import './config.scss';
 
-type romPath = {
-    path: string;
-    name: string;
-}
+import { LocalPathSettingsContext } from '../contexts';
+import { romPath} from '../../common/LocalPathSettings';
 
-function addRom(rompath: string = ''): romPath[] {
-    return ipcRenderer.sendSync('rom_update', rompath);
+// dialog callers
+function addRom(): romPath | undefined {
+    return ipcRenderer.sendSync('rom_update');
 }
 
 function newBizhawkPath(): string {
     return ipcRenderer.sendSync('bizhawk_path_update');
 }
 
-function updateServerURL(new_server: string = ''): string {
-    return ipcRenderer.sendSync('server_url_update', new_server);
-}
 
 const Config = () => {
 
-    // Router forces Config reload, so get states from main process
-    const [romlist, updateRoms] = useState<romPath[]>(
-        ipcRenderer.sendSync('get_roms_list')
-    );
+    const [local_path_settings, updateLocalPathSettings] = useContext(LocalPathSettingsContext);
 
-    const [bizhawk_path, updateBizhawkPath] = useState(
-        ipcRenderer.sendSync('get_bizhawk_path')
-    );
-
-    const [serverURL, changeServerURL] = useState(
-        ipcRenderer.sendSync('get_server_url')  
-    );
+    const [serverURLcandidate, changeServerCandidate] = useState(local_path_settings.server_url);
 
     return (
         <>
@@ -41,9 +28,21 @@ const Config = () => {
         <div>
             <h3>ServerURL</h3>
             <div className="romcard">
-                <input type="text" name="" id="" value={serverURL} onChange={(event) => changeServerURL(event.target.value)}/>
+                <input
+                    type="text" name="" id=""
+                    value={serverURLcandidate}
+                    onChange={(event) => changeServerCandidate(event.target.value)}
+                />
                 <div className="browse">
-                    <button onClick={() => { changeServerURL(updateServerURL(serverURL))}}>Change...</button>
+                    <button onClick={() => {
+                        updateLocalPathSettings({
+                            type: "setOne",
+                            action: ['server_url', serverURLcandidate]
+                        });
+                        changeServerCandidate(local_path_settings.server_url);
+                    }}>
+                        Change...
+                    </button>
                 </div>
             </div>
         </div>
@@ -51,11 +50,15 @@ const Config = () => {
         <div className="romAdder">
             <h3>ROM Paths</h3>
             <button className="square" onClick={() => {
-                updateRoms(addRom());
+                const new_rom_path = addRom()
+                if (new_rom_path != undefined) updateLocalPathSettings({
+                    type: 'addRom',
+                    action: new_rom_path,
+                });
             }}>+</button>
         </div>
         <div>
-            {romlist.map((rominfo: romPath) =>
+            {local_path_settings.rompaths.map((rominfo: romPath) =>
                 <div key={rominfo.path}>
                     <hr/>
                     <div className="romcard">
@@ -64,7 +67,17 @@ const Config = () => {
                             <p>{rominfo.path}</p>
                             </div>
                         <div className="browse">
-                            <button onClick={() => { updateRoms(addRom(rominfo.path))}}>Browse...</button>
+                            <button 
+                                onClick={() => {
+                                    const new_rom_path = addRom()
+                                    if (new_rom_path != undefined) updateLocalPathSettings({
+                                        type: 'replaceRom',
+                                        action: [rominfo.path, new_rom_path],
+                                    }
+                                )}}
+                            >
+                                Browse...
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -75,9 +88,15 @@ const Config = () => {
             <h3>Bizhawk Path</h3>
             <hr/>
             <div className="romcard">
-                <div className="path"><p>{bizhawk_path}</p></div>
+                <div className="path"><p>{local_path_settings.bizhawk_path}</p></div>
                 <div className="browse">
-                    <button onClick={() => updateBizhawkPath(newBizhawkPath())}>Browse...</button>
+                    <button onClick={() => {
+                        const new_bizhawk_path = newBizhawkPath()
+                        if (new_bizhawk_path != undefined) updateLocalPathSettings({
+                            type: 'setOne',
+                            action: ['bizhawk_path', new_bizhawk_path]
+                        })
+                    }}>Browse...</button>
                 </div>
             </div>
         </div>

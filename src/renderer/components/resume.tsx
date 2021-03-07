@@ -6,18 +6,7 @@ import { ipcRenderer } from 'electron';
 
 import './lobby.scss';
 
-// interface for lobby settings
-// TODO: add gamepath/romPath into this
-//       no need for it to be separate tbh
-interface LobbySettings {
-    username: string;
-    gamepath: string;
-    lobby_size: number;
-    lobby_code: string;
-    lobby_password: string;
-    gym_status: number;
-};
-
+// TODO: use context's here instead!!
 const Resume = () => {
 
     let history = useHistory();

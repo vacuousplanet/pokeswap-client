@@ -6,7 +6,7 @@ import fs from 'fs'
 
 import {isHttpUri} from 'valid-url';
 
-import gameType from './gba_checker';
+import gameType from '../common/gba_checker';
 
 import {BizData, CODE_MAP, parseBizData, encodeTeamData} from './parse_bizdata';
 
@@ -34,9 +34,6 @@ interface SaveSettings {
 };
 
 //TODO: cache/load these on close/open respectively
-var rom_list: romPath[] = [];
-var bizhawk_path: string = '';
-var server_URL: string = 'http://127.0.0.1:3000';
 var lobby_settings: LobbySettings = <LobbySettings>{
     username: '',
     gamepath: '',
@@ -109,36 +106,25 @@ ipcMain.on('rom_update', (event, ...args) => {
     };
 
     dialog.showOpenDialog(options).then(result => {
-        if(!result.canceled && !rom_list.map(rompath => rompath.path).includes(result.filePaths[0])) {
+        if(!result.canceled) {
             const rom_name = gameType(result.filePaths[0]);
             if (rom_name === undefined) {
                 
                 dialog.showErrorBox('Unknown Rom', `${result.filePaths[0]} does not contain a known ROM`)
                 
-                event.returnValue = rom_list;
+                event.returnValue = undefined;
                 return;
-            }
-            if(args[0] !== ''){
-                const rl_index = rom_list.map(rompath => rompath.path).indexOf(args[0]);
-
-                rom_list[rl_index] = {
-                    path : result.filePaths[0],
-                    name : rom_name,
-                };
             } else {
-                rom_list.push({
+                event.returnValue = {
                     path: result.filePaths[0],
                     name: rom_name,
-                });
+                };
             }
+        } else {
+            event.returnValue = undefined
         }
-        event.returnValue = rom_list
     }).catch(err => console.log(err));
     return;
-});
-
-ipcMain.on('get_roms_list', (event, ...args) => {
-    event.returnValue = rom_list;
 });
 
 ipcMain.on('bizhawk_path_update', (event, ...args) => {
@@ -154,8 +140,8 @@ ipcMain.on('bizhawk_path_update', (event, ...args) => {
             dialog.showErrorBox('Invalid BizHawk Path', `Supplied path, ${result.filePaths[0]}, does not lead to EmuHawk.exe`);
             event.returnValue = '';
         }
-        else if(!result.canceled && !(bizhawk_path === result.filePaths[0])) {
-            bizhawk_path = result.filePaths[0];
+        else if(!result.canceled && !(args[0] === result.filePaths[0])) {
+            args[0] = result.filePaths[0];
             event.returnValue = result.filePaths[0];
         } else {
             event.returnValue = '';
@@ -163,58 +149,21 @@ ipcMain.on('bizhawk_path_update', (event, ...args) => {
     }).catch(err => console.log(err));
 });
 
-ipcMain.on('get_bizhawk_path', (event, ...args) => {
-    event.returnValue = bizhawk_path;
-});
-
 
 ipcMain.on('start_bizhawk', (event, ...args) => {
 
     // TODO: clear save ram folder in bizhawk!
 
+
+
     // start bizhawk
-    bizhawk_proc = spawn(bizhawk_path, [
-        lobby_settings.gamepath,
+    bizhawk_proc = spawn(args[0], [
+        args[1],
         '--socket_ip=127.0.0.1',
         `--socket_port=${port}`,
-        `--lua=${resolve(bizhawk_path, relative(bizhawk_path, local_lua_path))}`
+        `--lua=${resolve(args[0], relative(args[0], local_lua_path))}`
     ].concat(savestate === '' ? [] : [`--load-state=${savestate}`]));
 
-});
-
-
-ipcMain.on('get_server_url', (event, ...args) => {
-    event.returnValue = server_URL;
-});
-
-ipcMain.on('check_server_url', (event, ...args) => {
-    event.returnValue = true;
-});
-
-ipcMain.on('server_url_update', (event, ...args) => {
-    if (isHttpUri(args[0])) {
-        server_URL = args[0];
-    } else {
-        dialog.showErrorBox('Invalid Server', `${args[0]} is not a valid uri`);
-    }
-
-    event.returnValue = server_URL;
-});
-
-ipcMain.on('get_lobby_settings', (event, ...args) => {
-    event.returnValue = lobby_settings;
-});
-
-ipcMain.on('get-server-settings', (event, ...args) => {
-    const server_settings: LobbySettings = Object.assign({}, lobby_settings);
-    server_settings.gamepath = gameType(lobby_settings.gamepath) || '';
-
-    event.returnValue = server_settings;
-})
-
-ipcMain.on('update_lobby_settings', (event, ...args) => {
-    lobby_settings = Object.defineProperty(lobby_settings, args[0], {value: args[1]});
-    event.returnValue = lobby_settings;
 });
 
 ipcMain.on('update_player_list', (event, ...args) => {
