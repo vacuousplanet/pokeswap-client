@@ -18,10 +18,19 @@ type LocalPathSettingsContextValue = [
     }>
 ]
 
+type LobbyInitModeContextValue = [
+    string,
+    React.Dispatch<React.SetStateAction<string>>
+]
+
 export const LobbySettingsContext = createContext<LobbySettingsContextValue>(
     (null as unknown) as LobbySettingsContextValue
 );
 
 export const LocalPathSettingsContext = createContext<LocalPathSettingsContextValue>(
     (null as unknown) as LocalPathSettingsContextValue
+);
+
+export const LobbyInitModeContext = createContext<LobbyInitModeContextValue>(
+    (null as unknown) as LobbyInitModeContextValue
 );

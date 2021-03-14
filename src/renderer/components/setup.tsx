@@ -1,17 +1,15 @@
-import React, {useState, useContext} from 'react';
+import React, {useContext} from 'react';
 
 import {useHistory} from 'react-router-dom';
 
-import { ipcRenderer } from 'electron';
-
-import { LobbySettingsContext, LocalPathSettingsContext } from '../contexts';
+import { LobbySettingsContext, LocalPathSettingsContext, LobbyInitModeContext } from '../contexts';
 
 import { romPath } from '../../common/LocalPathSettings';
 
 import './lobby.scss';
 
 
-// TODO: the form here could be cleaned up a whole bunch
+// TODO: maybe clean the form up a bit?
 const LobbySetup = () => {
 
     let history = useHistory();
@@ -19,6 +17,8 @@ const LobbySetup = () => {
     const [lobby_settings, updateLobbySettings] = useContext(LobbySettingsContext);
 
     const [local_path_settings, ] = useContext(LocalPathSettingsContext);
+
+    const [, updateLobbyInitMode] = useContext(LobbyInitModeContext);
 
     const options = 
         local_path_settings.rompaths.length > 0
@@ -37,7 +37,7 @@ const LobbySetup = () => {
                 <h2>Create Lobby</h2>
                 <form onSubmit={(event) => {
                     event.preventDefault();
-                    ipcRenderer.send('lobby-init', 'create');
+                    updateLobbyInitMode('create');
                     history.push("/lobby/connect");
                 }}>
                     <div className="form-section">
@@ -92,7 +92,7 @@ const LobbySetup = () => {
                 <h2>Join Lobby</h2>
                 <form onSubmit={(event) => {
                     event.preventDefault();
-                    ipcRenderer.send('lobby-init', 'join');
+                    updateLobbyInitMode('join');
                     history.push("/lobby/connect");
                 }}>
                     <div className="form-section">

@@ -80,11 +80,16 @@ while true do
         break
     end
 
-    if string.gmatch(responce, "([^"..":".."]+)", 0) == "savestate" then
-        local ss_path = string.gmatch(responce, "([^"..":".."]+)", 1)
-        savestate.save(ss_path)
+    local ss_flag = false
+    for msg in string.gmatch(responce, "([^"..":".."]+)") do
+        if ss_flag then
+            savestate.save(msg)
+            client.exit()
+        end
 
-        client.exit()
+        if msg == "savestate" then
+            ss_flag = true
+        end
     end
 
     if state == "idle" then

@@ -33,17 +33,18 @@
 
 ---
 
- - 📝 add restartability/rejoin-ability
- - ❌ store/cache paths and relevant data
- - ❌ figure out elite four stuff
- - ❌ do frame counts and/or read game time/gen-stats at end of session
+ - ✔️ add restartability/rejoin-ability
+ - ✔️ store/cache paths and relevant data
+ - ❌ make deployable
  - ❌ create comprehensive readme for setup, etc
- - ❌ polish project structure, css, etc.
+ - 📝 polish project structure, css, etc.
 
 Once these steps are completed, I think I can release a beta version
 
 ---
 
+ - ❌ do frame counts and/or read game time/gen-stats at end of session
+ - ❌ figure out elite four stuff
  - ❌ store loadable memory addresses somewhere
  - ❌ allow other roms (fire red, saphire, ruby, etc)
  - ❌ move from 'swap-on-server' to 'swap-between' architecture

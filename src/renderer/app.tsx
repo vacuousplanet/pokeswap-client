@@ -1,10 +1,13 @@
-import React, {useReducer} from 'react';
+import React, {useReducer, useState, useEffect} from 'react';
 import Sidebar from './components/sidebar';
-import {lobbySettingsReducer, localPathSettingsReducer} from './reducers';
-import { LobbySettingsContext, LocalPathSettingsContext } from './contexts'
+import {lobbySettingsReducer, localPathSettingsReducer, path_store} from './reducers';
+import {
+    LobbySettingsContext,
+    LocalPathSettingsContext,
+    LobbyInitModeContext} from './contexts';
 import './app.scss';
 
-// TODO: load these from store
+
 const App = () => {
     const lobby_settings = useReducer(lobbySettingsReducer, {
         username: '',
@@ -21,10 +24,21 @@ const App = () => {
          server_url: 'http://127.0.0.1:3000',
     });
 
+    const lobby_init_mode = useState('');
+
+    useEffect(() => {
+        local_path_settings[1]({
+            type: 'set',
+            action: path_store.store
+        });
+    }, []);
+
     return (
         <LobbySettingsContext.Provider value={lobby_settings}>
             <LocalPathSettingsContext.Provider value={local_path_settings}>
-                <Sidebar />
+                <LobbyInitModeContext.Provider value={lobby_init_mode}>
+                    <Sidebar />
+                </LobbyInitModeContext.Provider>
             </LocalPathSettingsContext.Provider>
         </LobbySettingsContext.Provider>
     )

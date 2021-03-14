@@ -10,10 +10,9 @@ function addRom(): romPath | undefined {
     return ipcRenderer.sendSync('rom_update');
 }
 
-function newBizhawkPath(): string {
+function newBizhawkPath(): string | undefined {
     return ipcRenderer.sendSync('bizhawk_path_update');
 }
-
 
 const Config = () => {
 
@@ -51,7 +50,7 @@ const Config = () => {
             <h3>ROM Paths</h3>
             <button className="square" onClick={() => {
                 const new_rom_path = addRom()
-                if (new_rom_path != undefined) updateLocalPathSettings({
+                if (new_rom_path !== undefined) updateLocalPathSettings({
                     type: 'addRom',
                     action: new_rom_path,
                 });
@@ -70,7 +69,7 @@ const Config = () => {
                             <button 
                                 onClick={() => {
                                     const new_rom_path = addRom()
-                                    if (new_rom_path != undefined) updateLocalPathSettings({
+                                    if (new_rom_path !== undefined) updateLocalPathSettings({
                                         type: 'replaceRom',
                                         action: [rominfo.path, new_rom_path],
                                     }
@@ -92,7 +91,7 @@ const Config = () => {
                 <div className="browse">
                     <button onClick={() => {
                         const new_bizhawk_path = newBizhawkPath()
-                        if (new_bizhawk_path != undefined) updateLocalPathSettings({
+                        if (new_bizhawk_path !== undefined) updateLocalPathSettings({
                             type: 'setOne',
                             action: ['bizhawk_path', new_bizhawk_path]
                         })
