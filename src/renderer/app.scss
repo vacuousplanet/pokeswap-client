@@ -16,6 +16,9 @@ $font-stack: Helvetica, sans-serif;
 body {
     background-color: $background-color;
     color: $on-background;
+    height: 100%;
+    margin: 0;
+    width: 100%;
     font: 100% $font-stack;
 }
 
@@ -65,14 +68,50 @@ body {
     }
 }
 
+%menu-button-base {
+    background-color: $surface-color;
+    color: $on-surface;
+    border: 1px solid rgba($on-background, 0);
+    
+    &:hover:enabled {
+        color: $on-background;
+        background-color: $surface-color;
+        border: 1px solid rgba($on-background, 0);
+    }
+
+    &:focus:enabled {
+        color: $on-background;
+        border-color: $on-background;
+        background-color: $surface-color;
+    }
+}
+
 button {
     @extend %button-base;
 }
 
-.square {
-    display: inline-block;
-    font-size: 18px;
+button.square {
+    display: flex;
+    justify-content: space-around;
+    font-size: 15px;
     height: 30px;
     width: 30px;
-    padding: 0px 0px;
+}
+
+div.titlebar {
+    background-color: $surface-color;
+    height: 30px;
+    width: 100%;
+    margin: 0;
+    min-height: 100%;
+    font-size: 18px;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    -webkit-app-region: drag;
+
+    button {
+        @extend %menu-button-base;
+        -webkit-app-region: no-drag;
+    }
 }

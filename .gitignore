@@ -1,5 +1,6 @@
 dist/
 node_modules/
 captains_log.md
-
+build/
 test_util/
+*-win32-x64/

@@ -40,8 +40,6 @@ const biz_server = createServer(socket => {
         
         const decoded_content: any = CODE_MAP.get(parsed.code)(parsed.content);
 
-        // console.log(`${parsed.code} -> ${decoded_content}`);
-
         // send data_buf to ps_server (through renderer)
         rend_game_coms_event.reply('game-coms-loop-in', parsed.code, decoded_content);
     });
@@ -59,7 +57,9 @@ const createWindow = (): void => {
         webPreferences: {
             nodeIntegration: true,
             webSecurity: false,
+            devTools: false,
         },
+        frame: false,
     });
 
     win.loadFile('index.html');
@@ -208,6 +208,9 @@ ipcMain.on('user-error', (event, ...args) => {
     dialog.showErrorBox(args[0], args[1]);
 });
 
+ipcMain.on('quit-pokeswap', (event, ...args) => {
+    app.quit();
+});
 
 ipcMain.on('get-load-file', (event, ...args) => {
     const options: Electron.OpenDialogOptions = {

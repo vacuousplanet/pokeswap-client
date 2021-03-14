@@ -1,4 +1,7 @@
 import React, {useReducer, useState, useEffect} from 'react';
+
+import { ipcRenderer } from 'electron';
+
 import Sidebar from './components/sidebar';
 import {lobbySettingsReducer, localPathSettingsReducer, path_store} from './reducers';
 import {
@@ -6,6 +9,18 @@ import {
     LocalPathSettingsContext,
     LobbyInitModeContext} from './contexts';
 import './app.scss';
+
+const TitleBar = () => {
+    return (
+        <div className='titlebar'>
+            <button
+                onClick={() => ipcRenderer.send('quit-pokeswap')}
+            >
+                x
+            </button>
+        </div>
+    )
+}
 
 
 const App = () => {
@@ -37,6 +52,7 @@ const App = () => {
         <LobbySettingsContext.Provider value={lobby_settings}>
             <LocalPathSettingsContext.Provider value={local_path_settings}>
                 <LobbyInitModeContext.Provider value={lobby_init_mode}>
+                    <TitleBar />
                     <Sidebar />
                 </LobbyInitModeContext.Provider>
             </LocalPathSettingsContext.Provider>
