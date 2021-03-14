@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack",
     "start": "npm run build && electron build/main.js",
-    "dist": "npm run build && copy package.json .\\build && electron-packager build pokeswap --overwrite"
+    "dist": "npm run build && copy package.json .\\build && electron-packager build pokeswap --overwrite --icon=resources/pokeswap_icon.ico"
   },
   "author": {
     "name": "Adam Kagel",
