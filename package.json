@@ -1,12 +1,12 @@
 {
   "name": "pokeswap_client",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Desktop client for running pokeswap",
   "main": "main.js",
   "scripts": {
     "build": "webpack",
     "start": "npm run build && electron build/main.js",
-    "dist": "npm run build && copy package.json .\\build && electron-packager build pokeswap --overwrite --icon=resources/pokeswap_icon.ico"
+    "package": "npm run build && copy package.json .\\build && electron-packager build pokeswap --overwrite --icon=resources/pokeswap_icon.ico"
   },
   "author": {
     "name": "Adam Kagel",
@@ -30,6 +30,8 @@
     "electron-builder": "^22.9.1",
     "electron-packager": "^15.2.0",
     "electron-webpack": "^2.8.2",
+    "electron-winstaller": "^5.0.0",
+    "electron-wix-msi": "^3.0.6",
     "html-webpack-plugin": "^4.5.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
