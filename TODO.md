@@ -35,11 +35,9 @@
 
  - ✔️ add restartability/rejoin-ability
  - ✔️ store/cache paths and relevant data
- - ❌ make deployable
- - ❌ create comprehensive readme for setup, etc
+ - ✔️ make deployable
+ - 📝 create comprehensive readme for setup, etc
  - 📝 polish project structure, css, etc.
-
-Once these steps are completed, I think I can release a beta version
 
 ---
 
