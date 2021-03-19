@@ -3,7 +3,7 @@ import { existsSync } from 'fs';
 import {LobbySettings} from '../common/LobbySettings';
 import {LocalPathSettings, romPath} from '../common/LocalPathSettings';
 
-import { isHttpUri } from 'valid-url';
+import { isHttpUri, isHttpsUri } from 'valid-url';
 import { ipcRenderer} from 'electron';
 
 import Store from 'electron-store';
@@ -74,14 +74,14 @@ export const localPathSettingsReducer = (
                 rompath => existsSync(rompath.path)
             ) : [];
 
-            if (!isHttpUri(lps_candidate.server_url)) {
+            if (!isHttpUri(lps_candidate.server_url) && !isHttpsUri(lps_candidate.server_url)) {
                 lps_candidate.server_url = storeConfig.schema?.server_url.default
             }
 
             return lps_candidate as LocalPathSettings;
         case 'setOne':
             const kv_pair = action.action as [string, unknown];
-            if (kv_pair[0] === 'server_url' && !isHttpUri(kv_pair[1] as string)) {
+            if (kv_pair[0] === 'server_url' && !isHttpUri(kv_pair[1] as string) && !isHttpsUri(kv_pair[1] as string)) {
                 ipcRenderer.send('user-error', 'Invalid Server', `${kv_pair[1]} is not a valide URL`);
                 return state
             } else {
